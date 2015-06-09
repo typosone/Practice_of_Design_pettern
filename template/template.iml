@@ -7,12 +7,5 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="iterator" />
-    <orderEntry type="module" module-name="adapter" />
-    <orderEntry type="module" module-name="template" />
-    <orderEntry type="module" module-name="factory" />
-    <orderEntry type="module" module-name="singleton" />
-    <orderEntry type="module" module-name="prototype" />
-    <orderEntry type="module" module-name="builder" />
   </component>
 </module>

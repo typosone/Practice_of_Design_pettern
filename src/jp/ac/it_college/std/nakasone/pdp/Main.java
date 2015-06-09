@@ -4,16 +4,127 @@ import jp.ac.it_college.std.nakasone.pdp.adapter.Print;
 import jp.ac.it_college.std.nakasone.pdp.adapter.Print2;
 import jp.ac.it_college.std.nakasone.pdp.adapter.PrintBanner;
 import jp.ac.it_college.std.nakasone.pdp.adapter.PrintBanner2;
+import jp.ac.it_college.std.nakasone.pdp.builder.Director;
+import jp.ac.it_college.std.nakasone.pdp.builder.HTMLBuilder;
+import jp.ac.it_college.std.nakasone.pdp.builder.TextBuilder;
+import jp.ac.it_college.std.nakasone.pdp.factory.framework.Factory;
+import jp.ac.it_college.std.nakasone.pdp.factory.framework.Product;
+import jp.ac.it_college.std.nakasone.pdp.factory.idcard.IDCardFactory;
 import jp.ac.it_college.std.nakasone.pdp.iterator.Book;
 import jp.ac.it_college.std.nakasone.pdp.iterator.BookShelf;
+import jp.ac.it_college.std.nakasone.pdp.iterator.BookShelf2;
 import jp.ac.it_college.std.nakasone.pdp.iterator.Iterator;
+import jp.ac.it_college.std.nakasone.pdp.prototype.MessageBox;
+import jp.ac.it_college.std.nakasone.pdp.prototype.UnderlinePen;
+import jp.ac.it_college.std.nakasone.pdp.prototype.framework.Manager;
+import jp.ac.it_college.std.nakasone.pdp.singleton.Singleton;
+import jp.ac.it_college.std.nakasone.pdp.template.AbstractDisplay;
+import jp.ac.it_college.std.nakasone.pdp.template.CharDisplay;
+import jp.ac.it_college.std.nakasone.pdp.template.StringDisplay;
 
 import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) {
-        hashMapTest();
+        builderMain(new String[] {"plain"});
+    }
+
+    private static void builderMain(String[] args) {
+        if (args.length != 1) {
+            builderUsage();
+            System.exit(0);
+        }
+        if (args[0].equals("plain")) {
+            TextBuilder textBuilder = new TextBuilder();
+            Director director = new Director(textBuilder);
+            director.construct();
+            String result = textBuilder.getResult();
+            System.out.println(result);
+        } else if (args[0].equals("html")) {
+            HTMLBuilder htmlBuilder = new HTMLBuilder();
+            Director director = new Director(htmlBuilder);
+            director.construct();
+            String filename = htmlBuilder.getResult();
+            System.out.println(filename + " が作成されました。");
+        } else {
+            builderUsage();
+            System.exit(0);
+        }
+    }
+
+    private static void builderUsage() {
+        System.out.println("Usage: java Main plain\t\tプレーンテキストで文書作成");
+        System.out.println("Usage: java Main html\t\tHTMLファイルで文書作成");
+    }
+
+    public static void prototypeMain() {
+        Manager manager = new Manager();
+        UnderlinePen upen = new UnderlinePen('~');
+        MessageBox mbox = new MessageBox('*');
+        MessageBox sbox = new MessageBox('/');
+        manager.register("strong message", upen);
+        manager.register("warning box", mbox);
+        manager.register("slash box", sbox);
+
+        jp.ac.it_college.std.nakasone.pdp.prototype.framework.Product p1
+                = manager.create("strong message");
+        p1.use("Hello, world.");
+
+        jp.ac.it_college.std.nakasone.pdp.prototype.framework.Product p2
+                = manager.create("warning box");
+        p2.use("Hello, world.");
+
+        jp.ac.it_college.std.nakasone.pdp.prototype.framework.Product p3
+                = manager.create("slash box");
+        p3.use("Hello, world.");
+    }
+
+    public static void factoryMain() {
+        Factory factory = new IDCardFactory();
+
+        Product card1 = factory.create("結城浩");
+        Product card2 = factory.create("とむら");
+        Product card3 = factory.create("佐藤花子");
+
+        card1.use();
+        card2.use();
+        card3.use();
+    }
+
+    public static void singletonMain() {
+        System.out.println("Start");
+        Singleton obj1 = Singleton.getInstance();
+        Singleton obj2 = Singleton.getInstance();
+
+        if (obj1 == obj2) {
+            System.out.println("obj1とobj2は同じインスタンスです");
+        } else {
+            System.out.println("obj1とobj2は同じインスタンスではありません");
+        }
+        System.out.println("End.");
+    }
+
+    public static void templateMain() {
+        AbstractDisplay d1 = new CharDisplay('H');
+        AbstractDisplay d2 = new StringDisplay("Hello, world.");
+        AbstractDisplay d3 = new StringDisplay("こんにちは。");
+
+        d1.display();
+        d2.display();
+        d3.display();
+    }
+
+    public static void adapterMain2() {
+        Print2 p = new PrintBanner2("Hello");
+        p.printWeak();
+        p.printStrong();
+    }
+
+    public static void adapterMain() {
+        Print p = new PrintBanner("Hello");
+        p.printWeak();
+        p.printStrong();
     }
 
     public static void iteratorMain() {
@@ -30,16 +141,18 @@ public class Main {
         }
     }
 
-    public static void adapterMain() {
-        Print p = new PrintBanner("Hello");
-        p.printWeak();
-        p.printStrong();
-    }
+    public static void practice1_1() {
+        BookShelf2 bookShelf = new BookShelf2(4);
+        bookShelf.appendBook(new Book("Around the World in 80 Days"));
+        bookShelf.appendBook(new Book("Bible"));
+        bookShelf.appendBook(new Book("Cinderella"));
+        bookShelf.appendBook(new Book("Daddy-Long-Legs"));
+        Iterator it = bookShelf.iterator();
 
-    public static void adapterMain2() {
-        Print2 p = new PrintBanner2("Hello");
-        p.printWeak();
-        p.printStrong();
+        while (it.hasNext()) {
+            Book book = (Book) it.next();
+            System.out.println(book.getName());
+        }
     }
 
     public static void arrayListTest1() {
