@@ -4,10 +4,14 @@ import jp.ac.it_college.std.nakasone.pdp.adapter.Print;
 import jp.ac.it_college.std.nakasone.pdp.adapter.Print2;
 import jp.ac.it_college.std.nakasone.pdp.adapter.PrintBanner;
 import jp.ac.it_college.std.nakasone.pdp.adapter.PrintBanner2;
+import jp.ac.it_college.std.nakasone.pdp.af.factory.Factory;
+import jp.ac.it_college.std.nakasone.pdp.af.factory.Link;
+import jp.ac.it_college.std.nakasone.pdp.af.factory.Page;
+import jp.ac.it_college.std.nakasone.pdp.af.factory.Tray;
+import jp.ac.it_college.std.nakasone.pdp.af.listfactory.ListFactory;
 import jp.ac.it_college.std.nakasone.pdp.builder.Director;
 import jp.ac.it_college.std.nakasone.pdp.builder.HTMLBuilder;
 import jp.ac.it_college.std.nakasone.pdp.builder.TextBuilder;
-import jp.ac.it_college.std.nakasone.pdp.factory.framework.Factory;
 import jp.ac.it_college.std.nakasone.pdp.factory.framework.Product;
 import jp.ac.it_college.std.nakasone.pdp.factory.idcard.IDCardFactory;
 import jp.ac.it_college.std.nakasone.pdp.iterator.Book;
@@ -27,7 +31,57 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        builderMain(new String[] {"plain"});
+        abstractMain(new String[]{"list"});
+    }
+
+    private static void abstractMain(String[] args) {
+        if (args.length != 1) {
+            System.out.println("Usage: java Main class.name.of.ConcreteFactory");
+            System.out.println("Example 1: java Main list");
+            System.out.println("Example 2: java Main table");
+            System.exit(0);
+        }
+
+        Factory factory = null;
+        switch (args[0]) {
+            case "list":
+                factory = Factory.getFactory(ListFactory.class);
+                break;
+            case "table":
+                factory = Factory.getFactory(ListFactory.class);
+                break;
+            default:
+                factory = Factory.getFactory(ListFactory.class);
+                break;
+        }
+
+
+
+        Link asahi = factory.createLink("朝日新聞", "http://www.asahi.com/");
+        Link yomiuri = factory.createLink("読売新聞", "http://www.yomiuri.co.jp/");
+
+        Link us_yahoo = factory.createLink("Yahoo!", "http://www.yahoo.com/");
+        Link jp_yahoo = factory.createLink("Yahoo! Japan", "http://www.yahoo.co.jp/");
+        Link excite = factory.createLink("Excite", "http://www.excite.com/");
+        Link google = factory.createLink("Google", "http://www.google.com/");
+
+        Tray traynews = factory.createTray("新聞");
+        traynews.add(asahi);
+        traynews.add(yomiuri);
+
+        Tray trayyahoo = factory.createTray("Yahoo!");
+        trayyahoo.add(us_yahoo);
+        trayyahoo.add(jp_yahoo);
+
+        Tray traysearch = factory.createTray("サーチエンジン");
+        traysearch.add(trayyahoo);
+        traysearch.add(excite);
+        traysearch.add(google);
+
+        Page page = factory.createPage("LinkPage", "結城 浩");
+        page.add(traynews);
+        page.add(traysearch);
+        page.output();
     }
 
     private static void builderMain(String[] args) {
@@ -81,7 +135,8 @@ public class Main {
     }
 
     public static void factoryMain() {
-        Factory factory = new IDCardFactory();
+        jp.ac.it_college.std.nakasone.pdp.factory.framework.Factory
+                factory = new IDCardFactory();
 
         Product card1 = factory.create("結城浩");
         Product card2 = factory.create("とむら");
