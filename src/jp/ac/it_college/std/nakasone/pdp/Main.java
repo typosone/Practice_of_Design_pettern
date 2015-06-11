@@ -9,9 +9,15 @@ import jp.ac.it_college.std.nakasone.pdp.af.factory.Link;
 import jp.ac.it_college.std.nakasone.pdp.af.factory.Page;
 import jp.ac.it_college.std.nakasone.pdp.af.factory.Tray;
 import jp.ac.it_college.std.nakasone.pdp.af.listfactory.ListFactory;
+import jp.ac.it_college.std.nakasone.pdp.bridge.CountDisplay;
+import jp.ac.it_college.std.nakasone.pdp.bridge.Display;
+import jp.ac.it_college.std.nakasone.pdp.bridge.StringDisplayImpl;
 import jp.ac.it_college.std.nakasone.pdp.builder.Director;
 import jp.ac.it_college.std.nakasone.pdp.builder.HTMLBuilder;
 import jp.ac.it_college.std.nakasone.pdp.builder.TextBuilder;
+import jp.ac.it_college.std.nakasone.pdp.composite.Directory;
+import jp.ac.it_college.std.nakasone.pdp.composite.File;
+import jp.ac.it_college.std.nakasone.pdp.composite.FileTreatmentException;
 import jp.ac.it_college.std.nakasone.pdp.factory.framework.Product;
 import jp.ac.it_college.std.nakasone.pdp.factory.idcard.IDCardFactory;
 import jp.ac.it_college.std.nakasone.pdp.iterator.Book;
@@ -22,6 +28,10 @@ import jp.ac.it_college.std.nakasone.pdp.prototype.MessageBox;
 import jp.ac.it_college.std.nakasone.pdp.prototype.UnderlinePen;
 import jp.ac.it_college.std.nakasone.pdp.prototype.framework.Manager;
 import jp.ac.it_college.std.nakasone.pdp.singleton.Singleton;
+import jp.ac.it_college.std.nakasone.pdp.strategy.Hand;
+import jp.ac.it_college.std.nakasone.pdp.strategy.Player;
+import jp.ac.it_college.std.nakasone.pdp.strategy.ProbStrategy;
+import jp.ac.it_college.std.nakasone.pdp.strategy.WinningStrategy;
 import jp.ac.it_college.std.nakasone.pdp.template.AbstractDisplay;
 import jp.ac.it_college.std.nakasone.pdp.template.CharDisplay;
 import jp.ac.it_college.std.nakasone.pdp.template.StringDisplay;
@@ -31,7 +41,94 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        abstractMain(new String[]{"list"});
+        jp.ac.it_college.std.nakasone.pdp.decorator.Main.main(args);
+    }
+
+    private static void compositeMain() {
+        try {
+            System.out.println("Making root entries...");
+            Directory rootdir = new Directory("root");
+            Directory bindir = new Directory("bin");
+            Directory tmpdir = new Directory("tmp");
+            Directory usrdir = new Directory("usr");
+            rootdir.add(bindir)
+                    .add(tmpdir)
+                    .add(usrdir)
+            ;
+            bindir.add(new File("vi", 10000))
+                    .add(new File("latex", 20000))
+            ;
+            rootdir.printList();
+
+            System.out.println();
+            System.out.println("Making user entries...");
+            Directory yuki = new Directory("yuki");
+            Directory hanako = new Directory("hanako");
+            Directory tomura = new Directory("tomura");
+            usrdir.add(yuki)
+                    .add(hanako)
+                    .add(tomura)
+            ;
+            yuki.add(new File("diary.html", 100))
+                    .add(new File("composite.java", 200))
+            ;
+            hanako.add(new File("memo.tex", 300));
+            tomura.add(new File("game.doc", 400))
+                    .add(new File("junk.mail", 500))
+            ;
+            rootdir.printList();
+        } catch (FileTreatmentException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace(System.err);
+            System.exit(-1);
+        }
+    }
+
+    private static void strategyMain(String[] args) {
+        if (args.length != 2) {
+            System.out.println("Usage: java Main randomseed1 randomseed2");
+            System.out.println("Example: java Main 314 15");
+            System.exit(0);
+        }
+
+        int seed1 = Integer.parseInt(args[0]);
+        int seed2 = Integer.parseInt(args[1]);
+        Player player1 = new Player("Taro", new WinningStrategy(seed1));
+        Player player2 = new Player("Hana", new ProbStrategy(seed2));
+
+        for (int i = 0; i < 10000; i++) {
+            Hand nextHand1 = player1.nextHand();
+            Hand nextHand2 = player2.nextHand();
+
+            if (nextHand1.isStrongerThan(nextHand2)) {
+                System.out.println("Winner: " + player1);
+                player1.win();
+                player2.lose();
+            } else if (nextHand2.isStrongerThan(nextHand1)) {
+                System.out.println("Winner: " + player2);
+                player1.lose();
+                player2.win();
+            } else {
+                System.out.println("Even...");
+                player1.even();
+                player2.even();
+            }
+        }
+
+        System.out.println("Total result:");
+        System.out.println(player1);
+        System.out.println(player2);
+    }
+
+    private static void bridgeMain() {
+        Display d1 = new Display(new StringDisplayImpl("Hello, Japan."));
+        Display d2 = new CountDisplay(new StringDisplayImpl("Hello, World"));
+        CountDisplay d3 = new CountDisplay(new StringDisplayImpl("Hello, Universe."));
+
+        d1.display();
+        d2.display();
+        d3.display();
+        d3.multiDisplay(5);
     }
 
     private static void abstractMain(String[] args) {
@@ -54,7 +151,6 @@ public class Main {
                 factory = Factory.getFactory(ListFactory.class);
                 break;
         }
-
 
 
         Link asahi = factory.createLink("朝日新聞", "http://www.asahi.com/");

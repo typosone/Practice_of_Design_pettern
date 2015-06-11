@@ -15,5 +15,9 @@
     <orderEntry type="module" module-name="prototype" />
     <orderEntry type="module" module-name="builder" />
     <orderEntry type="module" module-name="abstract" />
+    <orderEntry type="module" module-name="bridge" />
+    <orderEntry type="module" module-name="strategy" />
+    <orderEntry type="module" module-name="composite" />
+    <orderEntry type="module" module-name="decorator" />
   </component>
 </module>
