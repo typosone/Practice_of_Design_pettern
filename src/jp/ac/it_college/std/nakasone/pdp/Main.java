@@ -41,7 +41,8 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        jp.ac.it_college.std.nakasone.pdp.decorator.Main.main(args);
+        jp.ac.it_college.std.nakasone.pdp
+                .proxy.Main.main();
     }
 
     private static void compositeMain() {
