@@ -42,7 +42,7 @@ public class Main {
 
     public static void main(String[] args) {
         jp.ac.it_college.std.nakasone.pdp
-                .proxy.Main.main();
+                .interpreter.Main.main();
     }
 
     private static void compositeMain() {

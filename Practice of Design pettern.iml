@@ -28,5 +28,7 @@
     <orderEntry type="module" module-name="state" />
     <orderEntry type="module" module-name="flyweight" />
     <orderEntry type="module" module-name="proxy" />
+    <orderEntry type="module" module-name="command" />
+    <orderEntry type="module" module-name="interpreter" />
   </component>
 </module>
